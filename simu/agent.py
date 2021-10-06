@@ -39,7 +39,7 @@ class Student_Model(Agent):
         self.workload += workload
 
     def get_current_satisfaction(self):
-        self.satisfaction = 0.2(self.currentmarks) + 0.4(self.workload) + 0.3(self.gender) + 0.5(self.visa) + 0.2(self.dept)
+        self.satisfaction = 0.2(self.currentmarks) - 0.4(self.workload) + 0.3(self.gender) + 0.5(self.visa) + 0.2(self.dept)
         print (self.satisfaction)
 
     def end_of_life(self):
