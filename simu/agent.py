@@ -7,12 +7,12 @@
 # All the above things combined after 2 years to get the satisfaction. 
 
 
-from mesa import Model
+from mesa import Agent
 from mesa.datacollection import DataCollector
 from mesa.space import Grid
 from mesa.time import RandomActivation
 
-class Student_Model(Model):
+class Student_Model(Agent):
     satisfaction_level_overall = 0
     def __init__(self, arg_marks, gender, visa, dept):
         self.satisfaction = 0
