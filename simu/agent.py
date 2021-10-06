@@ -43,7 +43,7 @@ class Student_Model(Agent):
         cummulative = cummulative/len(student_group)
         self.currentmarks = (0.7*cummulative) + (0.3*self.currentmarks)
         self.workload += workload
-        print("Worload changed to: ", self.workload)
+        print("Workload changed to: ", self.workload)
         print("Marks changed to: ", self.currentmarks)
 
     def get_current_satisfaction(self):
@@ -70,6 +70,7 @@ class testModel(Model):
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(a, (x, y))
+            print("\nFor ",i, "th Agent")
             a.step(workload)
             
 
