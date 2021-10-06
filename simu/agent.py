@@ -20,32 +20,36 @@ class Student_Model(Agent):
         self.gender = gender
         self.visa = visa
         self.dept = dept
+        self.workload = 0.00
     
-    def move():
-        possible_steps = self.model.grid.get_neighborhood(
-            self.pos, moore=True, include_center=False
-        )
-        new_position = random.choice(possible_steps)
-        self.model.grid.move_agent(self, new_position)
+    def move(self):
+        # possible_steps = self.model.grid.get_neighborhood(
+        #     self.pos, moore=True, include_center=False
+        # )
+        # new_position = random.choice(1)
+        # self.model.grid.move_agent(self, new_position)
+        print ("in Move")
     
     def step(self, workload):
         self.move()
-        student_group = self.model.grid.get_cell_list_contents([self.pos])
+        student_group = [{"currentmarks": 6}]
+        # student_group = self.model.grid.get_cell_list_contents([self.pos])
         cummulative = 0.00
         for other_students in student_group:
-            cummulative += other_students.currentmarks
+            # print ()
+            cummulative += other_students["currentmarks"]
         cummulative = cummulative/len(student_group)
         self.currentmarks = (0.7*cummulative) + (0.3*self.currentmarks)
         self.workload += workload
 
     def get_current_satisfaction(self):
-        self.satisfaction = 0.2(self.currentmarks) - 0.4(self.workload) + 0.3(self.gender) + 0.5(self.visa) + 0.2(self.dept)
+        self.satisfaction = 0.2*(self.currentmarks) - 0.4*(self.workload) + 0.3*(self.gender) + 0.5*(self.visa) + 0.2*(self.dept)
         print (self.satisfaction)
 
     def end_of_life(self):
         self.satisfaction_level_overall = self.satisfaction
 
 test = Student_Model(0,0,0,0)
-Student_Model.move()
-Student_Model.step(5)
-Student_Model.get_current_satisfaction()
+test.move()
+test.step(5)
+test.get_current_satisfaction()
