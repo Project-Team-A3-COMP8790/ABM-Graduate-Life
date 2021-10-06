@@ -33,7 +33,7 @@ class Student_Model(Agent):
         student_group = self.model.grid.get_cell_list_contents([self.pos])
         cummulative = 0.00
         for other_students in student_group:
-            cummulative += other_students
+            cummulative += other_students.currentmarks
         cummulative = cummulative/len(student_group)
         self.currentmarks = (0.7*cummulative) + (0.3*self.currentmarks)
         self.workload += workload
