@@ -40,13 +40,19 @@ class Student_Model(Agent):
             # print (other_students.currentmarks)
             cummulative += other_students.currentmarks
         cummulative = cummulative/len(student_group)
-        self.currentmarks = (0.7*cummulative) + (0.3*self.currentmarks)
+        self.currentmarks = (0.3*cummulative) + (0.7*self.currentmarks)
         if self.gender == 'Male':
             work_val = self.workload_update_male(self.workload)
         else:
             work_val = self.workload_update_female_and_trans(self.workload)
         self.satisfaction += work_val
         print(self.workload)
+        
+        if (self.currentmarks > 77.67)
+            self.satisfaction += 1
+        else
+            self.satisfaction -= 1
+        
         # self.satisfaction = 0.2*(self.currentmarks) + 0.4*(self.workload) + 0.3*(self.gender) + 0.5*(self.visa) + 0.2*(self.dept)
         # print("Workload changed to: ", self.workload)
         # print("Marks changed to: ", self.currentmarks)
