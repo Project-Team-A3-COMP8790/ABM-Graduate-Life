@@ -50,7 +50,7 @@ class Student_Model(Agent):
         if self.visa < 70:
            self.satisfaction += 0.65
         else:
-                self.satisfaction += -0.35
+            self.satisfaction += -0.35
 
         
         if self.currentmarks >= 77.67:
