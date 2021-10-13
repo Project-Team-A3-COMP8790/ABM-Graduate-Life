@@ -46,11 +46,16 @@ class Student_Model(Agent):
         else:
             work_val = self.workload_update_female_and_trans(self.workload)
         self.satisfaction += work_val
-        print(self.workload)
         
-        if (self.currentmarks >= 77.67)
+        if self.visa < 70:
+           self.satisfaction += 0.65
+        else:
+                self.satisfaction += -0.35
+
+        
+        if self.currentmarks >= 77.67:
             self.satisfaction += 1
-        else
+        else:
             self.satisfaction -= 1
         
         # self.satisfaction = 0.2*(self.currentmarks) + 0.4*(self.workload) + 0.3*(self.gender) + 0.5*(self.visa) + 0.2*(self.dept)
