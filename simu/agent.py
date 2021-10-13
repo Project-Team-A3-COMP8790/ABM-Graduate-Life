@@ -48,7 +48,7 @@ class Student_Model(Agent):
         self.satisfaction += work_val
         print(self.workload)
         
-        if (self.currentmarks > 77.67)
+        if (self.currentmarks >= 77.67)
             self.satisfaction += 1
         else
             self.satisfaction -= 1
