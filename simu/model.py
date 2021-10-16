@@ -6,29 +6,41 @@ from mesa.datacollection import DataCollector
 from mesa.space import MultiGrid
 import random
 import numpy as np
+from random import randint
 
 class graduateModel(Model):
     workload  = [0.84, .70,0.60]
     work_value = 0
-    def __init__(self,N = 1000,height= 10,width = 10,initial_marks= 0,gender = 0.69,visa_status = 0.79):
+
+    def __init__(self,N = 1000,height= 10,width = 10,initial_marks_signma= 20,gender_range = 0.69,range = 70,mark_range = 0.3,interaction_intensity = 50,workload_first= 1,workload_second=0.5,worload_third_male = -1,workload_third_female= -0.75):
         super().__init__()
         self.num_agents = N
         self.work_value = self.workload[random.randint(0,2)]   
         self.grid = MultiGrid(width,height,True)
         self.schedule = RandomActivation(self)
+        self.initial_marks_signma = initial_marks_signma
+        self.visa_range = range
+        self.gender_range = gender_range
+        self.workload_first = workload_first
+        self.workload_second = workload_second
+        self.workload_third_male = worload_third_male
+        self.workload_third_female = workload_third_female
+        self.mark_range = mark_range
+        self.interaction_intentsity = interaction_intensity
 
 
 
         for i in range(self.num_agents):
             mu, sigma = 70, 20 # mean and standard deviation
-            temp_marks = np.random.normal(mu, sigma, N)
+            temp_marks = np.random.normal(mu, self.initial_marks_signma, N)
             avg_marks = temp_marks[random.randint(0,len(temp_marks)-1)]
             mu, sigma = 50, 30 # mean and standard deviation
             gender = np.random.normal(mu, sigma, N)
             gender = gender[random.randint(0,len(gender)-1)]
-            visa = self.random.randrange(10)
             
-            a = gradagents(avg_marks, gender, visa,i, self)
+
+   
+            a = gradagents(avg_marks, self.gender_range, self.visa_range,self.mark_range,workload_first,self.interaction_intentsity,workload_second,worload_third_male,workload_third_female,i, self)
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(a, (x, y))
@@ -37,9 +49,25 @@ class graduateModel(Model):
         
         self.datacollector = DataCollector(
             {
-            "Satisfied": lambda m: self.count_type_sat(m, 10),
-            "Unsatisfied": lambda m: self.count_type_unsat(m, 10)
-            
+
+                "Satisfied": lambda m: self.count_type_sat(m, 20),
+                "Mildly satisfied": lambda m: self.count_type_mild_sat(m, 40),
+                "Unsatisfied": lambda m: self.count_type_unsat(m, 60),
+                "Needs help": lambda m: self.count_type_help(m, 80),
+                "Suicide": lambda m: self.count_type_dead(m, 100),
+                "males": lambda m: self.count_males(m),
+                "femalse": lambda m: self.count_females(m),
+                "international": lambda m: self.count_international(m),
+                "domestic": lambda m: self.count_domestic(m, 80),
+                "AVG_Marks_Domestic": lambda m: self.average_domestic(m),
+                "AVG_Marks_internation": lambda m: self.average_international(m),
+                "AVG_Marks_males": lambda m: self.average_males(m),
+                "AVG_Marks_females": lambda m: self.average_females(m),
+                "AVG_Marks_Interact": lambda m: self.average_males(m),
+                "AVG_Marks_NoInteract": lambda m: self.average_females(m),
+                "AVG marks_interaction":  lambda m: self.average_interact(m,self.interaction_intentsity),
+                "Avg marks no interaction": lambda m: self.average_dont_interact(m,self.interaction_intentsity)
+
             }
         )
         
@@ -80,8 +108,199 @@ class graduateModel(Model):
         """
         count = 0
         for sat in model.schedule.agents:
-            if sat.satisfaction > sat_condition:
+            if sat.satisfaction <= sat_condition and sat.satisfaction > 40:
                 count += 1
         print("Un: ", count)
      
         return count
+    
+    @staticmethod
+    def count_type_mild_sat(model, sat_condition):
+        """
+        Helper method to count satisfaction in a given condition in a given model.
+        """
+        
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.satisfaction <= sat_condition and sat.satisfaction > 20:
+                count += 1
+        print("Sa: ", count)
+        
+        return count
+
+    @staticmethod
+    def count_type_help(model, sat_condition):
+        """
+        Helper method to count unsatisfaction in a given condition in a given model.
+        """
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.satisfaction <= sat_condition and sat.satisfaction > 60:
+                count += 1
+        print("Un: ", count)
+     
+        return count
+
+    
+    @staticmethod
+    def count_type_dead(model, sat_condition):
+        """
+        Helper method to count unsatisfaction in a given condition in a given model.
+        """
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.satisfaction <= sat_condition and sat.satisfaction > 80:
+                count += 1
+        print("Un: ", count)
+     
+        return count
+
+    @staticmethod
+    def count_males(model):
+        """
+        Helper method to count unsatisfaction in a given condition in a given model.
+        """
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.gender == 'male':
+                count += 1
+        print("Un: ", count)
+     
+        return count
+
+    @staticmethod
+    def count_females(model):
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.gender == 'famale':
+                count += 1
+        print("Un: ", count)
+     
+        return count
+    @staticmethod
+    def count_international(model):
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.visa == "international":
+                count += 1
+        print("Un: ", count)
+     
+        return count
+    
+    @staticmethod
+    def count_domestic(model):
+        count = 0
+        for sat in model.schedule.agents:
+            if sat.visa == "domestic":
+                count += 1
+        print("Un: ", count)
+     
+        return count
+
+    @staticmethod
+    def average_domestic(model):
+        count = 0
+        agent_value  = 0
+        for sat in model.schedule.agents:
+            if sat.visa == "domestic":
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+
+    @staticmethod
+    def average_international(model):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+            if sat.visa == "international":
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+
+
+    @staticmethod
+    def average_females(model,num_agents):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+            if sat.gender == "female":
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+
+    @staticmethod
+    def average_males(model,num_agents):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+            if sat.visa == "male":
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+    
+    @staticmethod
+    def average_males(model):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+            if sat.visa == "male":
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+
+
+    @staticmethod
+    def average_interact(model,interaction_intensity):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+            if sat.interaction_value < interaction_intensity:
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+    
+    @staticmethod
+    def average_dont_interact(model,interaction_intensity):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+             if sat.interaction_value > interaction_intensity:
+                count += sat.currentmarks
+                agent_value += 1
+        print("Un: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+
