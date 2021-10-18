@@ -1,9 +1,31 @@
+from mesa.model import Model
 from mesa.visualization.modules import CanvasGrid, ChartModule, PieChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
+import numpy as np
 
 from .model import graduateModel
 from .agent import Student_Model 
+from mesa.visualization.ModularVisualization import VisualizationElement
+
+class pieChartModule(VisualizationElement):
+    package_includes = ["Chart.min.js"]
+    local_includes = ["pieChart.js"]
+
+    def __init__(self, bins, canvas_height, canvas_width):
+        self.canvas_height = canvas_height
+        self.canvas_width = canvas_width
+        self.bins = bins
+        new_element = "new pieChartModule({}, {}, {})"
+        new_element = new_element.format(bins,
+                                         canvas_width,
+                                         canvas_height)
+        self.js_code = "elements.push(" + new_element + ");"
+
+    def render(self, model):
+        wealth_vals = [agent.wealth for agent in model.schedule.agents]
+        pieC = np.pieChart(wealth_vals, bins=self.bins)[0]
+        return [int(x) for x in pieC]
 
 COLORS = {
     "Satisfied": "#64dd17",
@@ -65,6 +87,10 @@ model_params = {
     "eventBudget": UserSettableParameter('slider',"Event Budget For Each Event",0,0,100000,70),
 
 }
+
+pieChart = PieChartModule([{"Label": label, "Color": color} for (label, color) in COLORS.items()], 200, 500)
+
 server = ModularServer(
-    graduateModel, [canvas_element, tree_chart],"Graduate life", model_params
+    graduateModel, [canvas_element, tree_chart, pieChart],"Graduate life", model_params
 )
+
