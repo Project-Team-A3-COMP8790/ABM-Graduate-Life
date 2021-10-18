@@ -18,18 +18,18 @@ class Student_Model(Agent):
     largest = 100
     smallest = 0
     visa = random.randint(smallest, largest - 1)    
-    def __init__(self, arg_marks, gender, visa,workload_first,mark_range,interaction_intensity,workload_second,worload_third_male,workload_third_female, unique_id, model):
+    def __init__(self, arg_marks, gender, gender_range, visa, visa_range,workload_first,mark_range,interaction_intensity,workload_second,worload_third_male,workload_third_female, unique_id, model):
         super().__init__(unique_id, model)
-        self.satisfaction = 0
+        self.satisfaction = 50
         self.currentmarks = arg_marks
-        self.gender = self.determine_gender(gender)
+        self.gender = self.determine_gender(gender, gender_range)
         self.visa = visa
         self.workload = 0.60
         self.workload_first = workload_first
         self.workload_second = workload_second
         self.workload_third_male = worload_third_male
         self.workload_third_female = workload_third_female
-        self.visa_status = self.get_visa_status(self.visa,self.range)
+        self.visa_status = self.get_visa_status(self.visa,visa_range)
         self.mark_range = mark_range
         self.interaction_value = random.randint(0, 100 - 1)
         self.interaction_intensity =  interaction_intensity
@@ -40,11 +40,11 @@ class Student_Model(Agent):
         )
         new_position = self.random.choice(possible_steps)
         self.model.grid.move_agent(self, new_position)
-        print ("Going to this position: ", new_position)
+        # print ("Going to this position: ", new_position)
     
     def step(self):
 
-        if self.satisfaction > 80:
+        if self.satisfaction > 1:
             
             if self.interaction_value < self.interaction_intensity:
                 self.move()
@@ -55,7 +55,7 @@ class Student_Model(Agent):
                 # print (other_students.currentmarks)
                     cummulative += other_students.currentmarks
                     cummulative = cummulative/len(student_group)
-                self.currentmarks = (self.mark_range*cummulative) + ((1-self.mark_range)*self.currentmarks)
+                self.currentmarks = (self.mark_range*cummulative) #+ ((1-self.mark_range)*self.currentmarks)
             else:
                 if random.randint(0, 100 - 1) > 50:
                     self.currentmarks = self.currentmarks - random.uniform(0, 1)

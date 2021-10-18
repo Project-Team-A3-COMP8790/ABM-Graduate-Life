@@ -11,15 +11,16 @@ from random import randint
 class graduateModel(Model):
     workload  = [0.84, .70,0.60]
     work_value = 0
-
-    def __init__(self,N = 1000,height= 10,width = 10,initial_marks_signma= 20,gender_range = 0.69,range = 70,mark_range = 0.3,interaction_intensity = 50,workload_first= 1,workload_second=0.5,worload_third_male = -1,workload_third_female= -0.75):
+    stepCounter = 0
+    agentCounter = 0
+    def __init__(self,N = 1000,height= 10,width = 10,initial_marks_signma= 20,gender_range = 0.69,visa_range = 70,mark_range = 0.3,interaction_intensity = 50,workload_first= 1,workload_second=0.5,worload_third_male = -1,workload_third_female= -0.75,eventFrequency = 0, eventBudget = 0):
         super().__init__()
         self.num_agents = N
         self.work_value = self.workload[random.randint(0,2)]   
         self.grid = MultiGrid(width,height,True)
         self.schedule = RandomActivation(self)
         self.initial_marks_signma = initial_marks_signma
-        self.visa_range = range
+        self.visa_range = visa_range
         self.gender_range = gender_range
         self.workload_first = workload_first
         self.workload_second = workload_second
@@ -28,7 +29,15 @@ class graduateModel(Model):
         self.mark_range = mark_range
         self.interaction_intentsity = interaction_intensity
 
-
+        self.eventFrequency = []
+        for eventNo in range (0, eventFrequency):
+            self.eventFrequency.append(random.randint(1, 150))
+        if(len(self.eventFrequency)>0):
+            self.eventFrequency.sort()
+        print(self.eventFrequency)
+        
+        self.eventBudget = eventBudget/70
+        
 
         for i in range(self.num_agents):
             mu, sigma = 70, 20 # mean and standard deviation
@@ -37,28 +46,31 @@ class graduateModel(Model):
             mu, sigma = 50, 30 # mean and standard deviation
             gender = np.random.normal(mu, sigma, N)
             gender = gender[random.randint(0,len(gender)-1)]
+            mu, sigma = 70, 30 # mean and standard deviation
+            visa = np.random.normal(mu, sigma, N)
+            visa = visa[random.randint(0,len(visa)-1)]
             
 
    
-            a = gradagents(avg_marks, self.gender_range, self.visa_range,self.mark_range,workload_first,self.interaction_intentsity,workload_second,worload_third_male,workload_third_female,i, self)
+            a = gradagents(avg_marks, gender, self.gender_range, visa, self.visa_range,self.mark_range,workload_first,self.interaction_intentsity,workload_second,worload_third_male,workload_third_female,i, self)
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(a, (x, y))
-            print("\nFor ",i, "th Agent")
+            # print("\nFor ",i, "th Agent")
             self.schedule.add(a)
         
         self.datacollector = DataCollector(
             {
 
-                "Satisfied": lambda m: self.count_type_sat(m, 20),
-                "Mildly satisfied": lambda m: self.count_type_mild_sat(m, 40),
-                "Unsatisfied": lambda m: self.count_type_unsat(m, 60),
-                "Needs help": lambda m: self.count_type_help(m, 80),
-                "Suicide": lambda m: self.count_type_dead(m, 100),
+                "Satisfied": lambda m: self.count_type_of_sat(m, 100, 80),
+                "Mildly satisfied": lambda m: self.count_type_of_sat(m, 80, 60),
+                "Needs help": lambda m: self.count_type_of_sat(m, 60, 40),
+                "Unsatisfied": lambda m: self.count_type_of_sat(m, 40, 1),
+                "Suicide": lambda m: self.count_type_of_sat(m, 1, 0),
                 "males": lambda m: self.count_males(m),
                 "femalse": lambda m: self.count_females(m),
                 "international": lambda m: self.count_international(m),
-                "domestic": lambda m: self.count_domestic(m, 80),
+                "domestic": lambda m: self.count_domestic(m),
                 "AVG_Marks_Domestic": lambda m: self.average_domestic(m),
                 "AVG_Marks_internation": lambda m: self.average_international(m),
                 "AVG_Marks_males": lambda m: self.average_males(m),
@@ -80,6 +92,14 @@ class graduateModel(Model):
         """
         for agent in self.schedule.agents:
             agent.workload = self.work_value
+            
+            if(self.stepCounter in self.eventFrequency):
+                if(randint(0,1)>0.5 and (self.eventBudget>0)):
+                    print("Event Happened")
+                    agent.satisfaction += 20
+                    self.eventBudget = self.eventBudget - 1
+        
+        self.stepCounter+=1
         self.schedule.step()
         self.work_value = self.workload[random.randint(0,2)]  
          
@@ -88,70 +108,12 @@ class graduateModel(Model):
 
 
     @staticmethod
-    def count_type_sat(model, sat_condition):
-        """
-        Helper method to count satisfaction in a given condition in a given model.
-        """
-        
+    def count_type_of_sat(model, higher_limit, lower_limit):
         count = 0
         for sat in model.schedule.agents:
-            if sat.satisfaction <= sat_condition:
+            if sat.satisfaction <= higher_limit and sat.satisfaction > lower_limit:
                 count += 1
-        print("Sa: ", count)
-        
-        return count
-
-    @staticmethod
-    def count_type_unsat(model, sat_condition):
-        """
-        Helper method to count unsatisfaction in a given condition in a given model.
-        """
-        count = 0
-        for sat in model.schedule.agents:
-            if sat.satisfaction <= sat_condition and sat.satisfaction > 40:
-                count += 1
-        print("Un: ", count)
-     
-        return count
-    
-    @staticmethod
-    def count_type_mild_sat(model, sat_condition):
-        """
-        Helper method to count satisfaction in a given condition in a given model.
-        """
-        
-        count = 0
-        for sat in model.schedule.agents:
-            if sat.satisfaction <= sat_condition and sat.satisfaction > 20:
-                count += 1
-        print("Sa: ", count)
-        
-        return count
-
-    @staticmethod
-    def count_type_help(model, sat_condition):
-        """
-        Helper method to count unsatisfaction in a given condition in a given model.
-        """
-        count = 0
-        for sat in model.schedule.agents:
-            if sat.satisfaction <= sat_condition and sat.satisfaction > 60:
-                count += 1
-        print("Un: ", count)
-     
-        return count
-
-    
-    @staticmethod
-    def count_type_dead(model, sat_condition):
-        """
-        Helper method to count unsatisfaction in a given condition in a given model.
-        """
-        count = 0
-        for sat in model.schedule.agents:
-            if sat.satisfaction <= sat_condition and sat.satisfaction > 80:
-                count += 1
-        print("Un: ", count)
+        print("Between ", higher_limit, "and ", lower_limit, "Count is: ", count)
      
         return count
 
@@ -183,7 +145,7 @@ class graduateModel(Model):
         for sat in model.schedule.agents:
             if sat.visa == "international":
                 count += 1
-        print("Un: ", count)
+        print("Females: ", count)
      
         return count
     
@@ -193,7 +155,7 @@ class graduateModel(Model):
         for sat in model.schedule.agents:
             if sat.visa == "domestic":
                 count += 1
-        print("Un: ", count)
+        print("Domestic: ", count)
      
         return count
 
@@ -205,7 +167,7 @@ class graduateModel(Model):
             if sat.visa == "domestic":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Avg Domestic Marks: ", count)
      
         if agent_value == 0:
             return count
@@ -220,7 +182,7 @@ class graduateModel(Model):
             if sat.visa == "international":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Avg Intl Marks: ", count)
      
         if agent_value == 0:
             return count
@@ -236,12 +198,28 @@ class graduateModel(Model):
             if sat.gender == "female":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Avg Female Marks: ", count)
      
         if agent_value == 0:
             return count
         else:
             return count/agent_value
+
+    @staticmethod
+    def average_females(model):
+        count = 0
+        agent_value = 0
+        for sat in model.schedule.agents:
+            if sat.gender == "female":
+                count += sat.currentmarks
+                agent_value += 1
+        print("Female: ", count)
+     
+        if agent_value == 0:
+            return count
+        else:
+            return count/agent_value
+       
 
     @staticmethod
     def average_males(model,num_agents):
@@ -251,7 +229,7 @@ class graduateModel(Model):
             if sat.visa == "male":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Male: ", count)
      
         if agent_value == 0:
             return count
@@ -266,7 +244,7 @@ class graduateModel(Model):
             if sat.visa == "male":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Avg Male: ", count)
      
         if agent_value == 0:
             return count
@@ -282,7 +260,7 @@ class graduateModel(Model):
             if sat.interaction_value < interaction_intensity:
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Avg Interact: ", count)
 
         if agent_value == 0:
             return count
@@ -297,7 +275,7 @@ class graduateModel(Model):
              if sat.interaction_value > interaction_intensity:
                 count += sat.currentmarks
                 agent_value += 1
-        print("Un: ", count)
+        print("Avg Dont Interact: ", count)
      
         if agent_value == 0:
             return count
