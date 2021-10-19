@@ -44,7 +44,7 @@ class Student_Model(Agent):
     
     def step(self):
 
-        if self.satisfaction > 1:
+        if self.satisfaction <= 99:
             
             if self.interaction_value < self.interaction_intensity:
                 self.move()
@@ -55,7 +55,7 @@ class Student_Model(Agent):
                 # print (other_students.currentmarks)
                     cummulative += other_students.currentmarks
                     cummulative = cummulative/len(student_group)
-                self.currentmarks = (self.mark_range*cummulative) #+ ((1-self.mark_range)*self.currentmarks)
+                self.currentmarks = (self.mark_range*cummulative) + ((1-self.mark_range)*self.currentmarks)
             else:
                 if random.randint(0, 100 - 1) > 50:
                     self.currentmarks = self.currentmarks - random.uniform(0, 1)
@@ -115,8 +115,7 @@ class Student_Model(Agent):
             return "Female"
         elif gender == gender_range:
             return "Trans"
-        
-
+    
     def get_visa_status(self,visa,range):
         if visa < range:
             return "international"

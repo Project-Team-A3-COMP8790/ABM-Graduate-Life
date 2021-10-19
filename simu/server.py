@@ -1,5 +1,5 @@
 from mesa.model import Model
-from mesa.visualization.modules import CanvasGrid, ChartModule, PieChartModule
+from mesa.visualization.modules import CanvasGrid, ChartModule, PieChartModule, BarChartModule, TextElement
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 import numpy as np
@@ -7,6 +7,23 @@ import numpy as np
 from .model import graduateModel
 from .agent import Student_Model 
 from mesa.visualization.ModularVisualization import VisualizationElement
+
+graduateModel_Initial = graduateModel
+class AttributeElement(TextElement):
+    def __init__(self, attr_name):
+        '''
+        Create a new text attribute element.
+
+        Args:
+            attr_name: The name of the attribute to extract from the model.
+
+        Example return: "happy: 10"
+        '''
+        self.attr_name = attr_name
+
+    def render(self, model):
+        val = getattr(model, str(self.attr_name))
+        return self.attr_name + ": " + str(val)
 
 class pieChartModule(VisualizationElement):
     package_includes = ["Chart.min.js"]
@@ -27,16 +44,22 @@ class pieChartModule(VisualizationElement):
         pieC = np.pieChart(wealth_vals, bins=self.bins)[0]
         return [int(x) for x in pieC]
 
-COLORS = {
+COLORS_SATISFICATION = {
     "Satisfied": "#64dd17",
     "Mildly satisfied": "#ff9800",
-    "Unsatisfied": "#f44336",
-    "Needs help": "#e57373",
+    "Unsatisfied": "#e57373",
+    "Needs help": "#f44336",
     "Suicide": "black",
+}
+COLORS_GENDER = {
     "males": "#03a9f4",
-    "femalse": "#ff80ab",
+    "females": "#ff80ab",
+}
+COLORS_VISA = {
     "international": "#5d4037",
     "domestic": "#e0e0e0",
+}
+COLORS_AVG_MARKS = {
     "AVG_Marks_Domestic": "#e0e0e0",
     "AVG_Marks_internation": "#5d4037",
     "AVG_Marks_males": "#03a9f4",
@@ -56,23 +79,23 @@ def graduateModelPotrayal(agent):
     (x, y) = agent.pos
     # print(agent.satisfaction)
 
-    if agent.satisfaction > 0 and agent.satisfaction <= 20:
-        portrayal["Color"] = COLORS["Satisfied"]
+    if agent.satisfaction <= 20:
+        portrayal["Color"] = COLORS_SATISFICATION["Satisfied"]
     elif agent.satisfaction > 20 and agent.satisfaction <= 40:
-        portrayal["Color"] = COLORS["Mildly satisfied"]
-    elif agent.satisfaction > 40 and agent.satisfaction <= 60:
-        portrayal["Color"] = COLORS["Needs help"]
-    elif agent.satisfaction > 60 and agent.satisfaction <= 98:
-        portrayal["Color"] = COLORS["Unsatisfied"]
+        portrayal["Color"] = COLORS_SATISFICATION["Mildly satisfied"]
+    elif agent.satisfaction > 40 and agent.satisfaction <= 80:
+        portrayal["Color"] = COLORS_SATISFICATION["Unsatisfied"]
+    elif agent.satisfaction > 80 and agent.satisfaction <= 99:
+        portrayal["Color"] = COLORS_SATISFICATION["Needs help"]
     else:
-        portrayal["Color"] = COLORS["Suicide"]
+        portrayal["Color"] = COLORS_SATISFICATION["Suicide"]
         
     return portrayal
 
 
 canvas_element = CanvasGrid(graduateModelPotrayal, 100, 100, 730, 500)
 tree_chart = ChartModule(
-    [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
+    [{"Label": label, "Color": color} for (label, color) in COLORS_SATISFICATION.items()]
 )
 
 model_params = {
@@ -92,9 +115,18 @@ model_params = {
 
 }
 
-pieChart = PieChartModule([{"Label": label, "Color": color} for (label, color) in COLORS.items()], 200, 500)
+pieChart_Visa = PieChartModule([{"Label": label, "Color": color} for (label, color) in COLORS_VISA.items()], 200, 250)
+pieChart_Gender = PieChartModule([{"Label": label, "Color": color} for (label, color) in COLORS_GENDER.items()], 200, 250)
+barChart_Satisfaction = BarChartModule(
+    [{"Label": label, "Color": color} for (label, color) in COLORS_SATISFICATION.items()]
+)
+barChart_Marks = BarChartModule(
+    [{"Label": label, "Color": color} for (label, color) in COLORS_AVG_MARKS.items()]
+)
+TextElement_Event = AttributeElement("eventCount")
+
 
 server = ModularServer(
-    graduateModel, [canvas_element, tree_chart, pieChart],"Graduate life", model_params
+    graduateModel_Initial, [TextElement_Event, canvas_element, tree_chart, pieChart_Visa, pieChart_Gender, barChart_Satisfaction, barChart_Marks],"Graduate life", model_params
 )
 

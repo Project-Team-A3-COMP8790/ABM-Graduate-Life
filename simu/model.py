@@ -1,4 +1,4 @@
-
+from win10toast import ToastNotifier
 from mesa import Model
 from mesa.time import RandomActivation
 from .agent import Student_Model as gradagents
@@ -8,11 +8,14 @@ import random
 import numpy as np
 from random import randint
 
+n = ToastNotifier()
+
 class graduateModel(Model):
     workload  = [0.84, .70,0.60]
     work_value = 0
     stepCounter = 0
     agentCounter = 0
+    eventCount = 0
     def __init__(self,N = 1000,height= 10,width = 10,initial_marks_signma= 20,gender_range = 0.69,visa_range = 70,mark_range = 0.3,interaction_intensity = 50,workload_first= 1,workload_second=0.5,worload_third_male = -1,workload_third_female= -0.75,eventFrequency = 0, eventBudget = 0):
         super().__init__()
         self.num_agents = N
@@ -62,24 +65,21 @@ class graduateModel(Model):
         self.datacollector = DataCollector(
             {
 
-                "Satisfied": lambda m: self.count_type_of_sat(m, 20, 0),
+                "Satisfied": lambda m: self.count_type_of_sat(m, 20, -100000000000),
                 "Mildly satisfied": lambda m: self.count_type_of_sat(m, 40, 20),
-                "Needs help": lambda m: self.count_type_of_sat(m, 80, 60),
-                "Unsatisfied": lambda m: self.count_type_of_sat(m, 60, 40),
-                "Suicide": lambda m: self.count_type_of_sat(m, 100, 80),
+                "Unsatisfied": lambda m: self.count_type_of_sat(m, 80, 40),
+                "Needs help": lambda m: self.count_type_of_sat(m, 99, 80),
+                "Suicide": lambda m: self.count_type_of_sat(m, 100, 99),
                 "males": lambda m: self.count_males(m),
                 "femalse": lambda m: self.count_females(m),
                 "international": lambda m: self.count_international(m),
                 "domestic": lambda m: self.count_domestic(m),
                 "AVG_Marks_Domestic": lambda m: self.average_domestic(m),
                 "AVG_Marks_internation": lambda m: self.average_international(m),
-                "AVG_Marks_males": lambda m: self.average_males(m),
-                "AVG_Marks_females": lambda m: self.average_females(m),
-                "AVG_Marks_Interact": lambda m: self.average_males(m),
-                "AVG_Marks_NoInteract": lambda m: self.average_females(m),
+                "AVG_Marks_males": lambda m: self.average_marks_gender(m, "Male"),
+                "AVG_Marks_females": lambda m: self.average_marks_gender(m, "Female"),
                 "AVG marks_interaction":  lambda m: self.average_interact(m,self.interaction_intentsity),
                 "Avg marks no interaction": lambda m: self.average_dont_interact(m,self.interaction_intentsity)
-
             }
         )
         
@@ -90,15 +90,19 @@ class graduateModel(Model):
         """
         Advance the model by one step.
         """
+        EventOccured = False
         for agent in self.schedule.agents:
             agent.workload = self.work_value
             
             if(self.stepCounter in self.eventFrequency):
-                if(randint(0,1)>0.5 and (self.eventBudget>0)):
-                    print("Event Happened")
-                    agent.satisfaction += 20
+                if(randint(0,1)>0.7 and (self.eventBudget>0)):
+                    EventOccured = True
+                    agent.satisfaction -= 5
                     self.eventBudget = self.eventBudget - 1
-        
+            
+        if(EventOccured == True):
+            self.eventCount+=1
+            n.show_toast("Event Occurred", "Event has Occurred", duration = 0.5)
         self.stepCounter+=1
         self.schedule.step()
         self.work_value = self.workload[random.randint(0,2)]  
@@ -124,9 +128,9 @@ class graduateModel(Model):
         """
         count = 0
         for sat in model.schedule.agents:
-            if sat.gender == 'male':
+            if sat.gender == 'Male':
                 count += 1
-        print("Un: ", count)
+        print("Male: ", count)
      
         return count
 
@@ -134,18 +138,18 @@ class graduateModel(Model):
     def count_females(model):
         count = 0
         for sat in model.schedule.agents:
-            if sat.gender == 'famale':
+            if sat.gender == 'Female':
                 count += 1
-        print("Un: ", count)
+        print("Female: ", count)
      
         return count
     @staticmethod
     def count_international(model):
         count = 0
         for sat in model.schedule.agents:
-            if sat.visa == "international":
+            if sat.visa_status == "international":
                 count += 1
-        print("Females: ", count)
+        print("international: ", count)
      
         return count
     
@@ -153,9 +157,9 @@ class graduateModel(Model):
     def count_domestic(model):
         count = 0
         for sat in model.schedule.agents:
-            if sat.visa == "domestic":
+            if sat.visa_status == "domestic":
                 count += 1
-        print("Domestic: ", count)
+        print("domestic: ", count)
      
         return count
 
@@ -164,14 +168,15 @@ class graduateModel(Model):
         count = 0
         agent_value  = 0
         for sat in model.schedule.agents:
-            if sat.visa == "domestic":
+            if sat.visa_status == "domestic":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Avg Domestic Marks: ", count)
+        
      
         if agent_value == 0:
             return count
         else:
+            print("Avg Domestic Marks: ", count/agent_value)
             return count/agent_value
 
     @staticmethod
@@ -179,79 +184,32 @@ class graduateModel(Model):
         count = 0
         agent_value = 0
         for sat in model.schedule.agents:
-            if sat.visa == "international":
+            if sat.visa_status == "international":
                 count += sat.currentmarks
                 agent_value += 1
-        print("Avg Intl Marks: ", count)
      
         if agent_value == 0:
             return count
         else:
+            print("Avg Intl Marks: ", count/agent_value)
             return count/agent_value
 
 
     @staticmethod
-    def average_females(model,num_agents):
+    def average_marks_gender(model, gender):
         count = 0
         agent_value = 0
         for sat in model.schedule.agents:
-            if sat.gender == "female":
+            if sat.gender == gender:
                 count += sat.currentmarks
                 agent_value += 1
-        print("Avg Female Marks: ", count)
-     
-        if agent_value == 0:
-            return count
-        else:
-            return count/agent_value
-
-    @staticmethod
-    def average_females(model):
-        count = 0
-        agent_value = 0
-        for sat in model.schedule.agents:
-            if sat.gender == "female":
-                count += sat.currentmarks
-                agent_value += 1
-        print("Female: ", count)
-     
-        if agent_value == 0:
-            return count
-        else:
-            return count/agent_value
-       
-
-    @staticmethod
-    def average_males(model,num_agents):
-        count = 0
-        agent_value = 0
-        for sat in model.schedule.agents:
-            if sat.visa == "male":
-                count += sat.currentmarks
-                agent_value += 1
-        print("Male: ", count)
+        print(gender,": ", count)
      
         if agent_value == 0:
             return count
         else:
             return count/agent_value
     
-    @staticmethod
-    def average_males(model):
-        count = 0
-        agent_value = 0
-        for sat in model.schedule.agents:
-            if sat.visa == "male":
-                count += sat.currentmarks
-                agent_value += 1
-        print("Avg Male: ", count)
-     
-        if agent_value == 0:
-            return count
-        else:
-            return count/agent_value
-
-
     @staticmethod
     def average_interact(model,interaction_intensity):
         count = 0
