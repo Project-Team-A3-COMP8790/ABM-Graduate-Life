@@ -62,11 +62,11 @@ class graduateModel(Model):
         self.datacollector = DataCollector(
             {
 
-                "Satisfied": lambda m: self.count_type_of_sat(m, 100, 80),
-                "Mildly satisfied": lambda m: self.count_type_of_sat(m, 80, 60),
-                "Needs help": lambda m: self.count_type_of_sat(m, 60, 40),
-                "Unsatisfied": lambda m: self.count_type_of_sat(m, 40, 1),
-                "Suicide": lambda m: self.count_type_of_sat(m, 1, 0),
+                "Satisfied": lambda m: self.count_type_of_sat(m, 20, 0),
+                "Mildly satisfied": lambda m: self.count_type_of_sat(m, 40, 20),
+                "Needs help": lambda m: self.count_type_of_sat(m, 80, 60),
+                "Unsatisfied": lambda m: self.count_type_of_sat(m, 60, 40),
+                "Suicide": lambda m: self.count_type_of_sat(m, 100, 80),
                 "males": lambda m: self.count_males(m),
                 "femalse": lambda m: self.count_females(m),
                 "international": lambda m: self.count_international(m),

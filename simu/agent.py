@@ -20,7 +20,7 @@ class Student_Model(Agent):
     visa = random.randint(smallest, largest - 1)    
     def __init__(self, arg_marks, gender, gender_range, visa, visa_range,workload_first,mark_range,interaction_intensity,workload_second,worload_third_male,workload_third_female, unique_id, model):
         super().__init__(unique_id, model)
-        self.satisfaction = 50
+        self.satisfaction = random.randint(0, 100 - 40)
         self.currentmarks = arg_marks
         self.gender = self.determine_gender(gender, gender_range)
         self.visa = visa
