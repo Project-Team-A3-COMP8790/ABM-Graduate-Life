@@ -70,25 +70,30 @@ COLORS_AVG_MARKS = {
     "Avg marks no interaction": "#607d8b"
 }
 
-
+ShapeIcon = "student_icon_"
 def graduateModelPotrayal(agent):
     if agent is None:
         return
-    portrayal = {"Shape": "./student_icon.png", "Filled": "true", "scale": 5, "Layer": 2}
+    portrayal = {"Filled": "true", "scale": 5, "Layer": 2}
 
     (x, y) = agent.pos
     # print(agent.satisfaction)
 
     if agent.satisfaction <= 20:
         portrayal["Color"] = COLORS_SATISFICATION["Satisfied"]
+        portrayal["Shape"] = ShapeIcon + "Satisfied.png"
     elif agent.satisfaction > 20 and agent.satisfaction <= 40:
         portrayal["Color"] = COLORS_SATISFICATION["Mildly satisfied"]
+        portrayal["Shape"] = ShapeIcon + "Mildly satisfied.png"
     elif agent.satisfaction > 40 and agent.satisfaction <= 80:
         portrayal["Color"] = COLORS_SATISFICATION["Unsatisfied"]
+        portrayal["Shape"] = ShapeIcon + "Unsatisfied.png"
     elif agent.satisfaction > 80 and agent.satisfaction <= 99:
         portrayal["Color"] = COLORS_SATISFICATION["Needs help"]
+        portrayal["Shape"] = ShapeIcon + "Needs help.png"
     else:
         portrayal["Color"] = COLORS_SATISFICATION["Suicide"]
+        portrayal["Shape"] = ShapeIcon + "Suicide.png"
         
     return portrayal
 
