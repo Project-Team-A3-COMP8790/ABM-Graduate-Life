@@ -18,6 +18,9 @@ class graduateModel(Model):
     eventCount = 0
     def __init__(self,N = 1000,height= 10,width = 10,initial_marks_signma= 20,gender_range = 0.69,visa_range = 70,mark_range = 0.3,interaction_intensity = 50,workload_first= 1,workload_second=0.5,worload_third_male = -1,workload_third_female= -0.75,eventFrequency = 0, eventBudget = 0):
         super().__init__()
+        gender_range= 1- gender_range
+        gender_range = gender_range*100
+        print(gender_range)
         self.num_agents = N
         self.work_value = self.workload[random.randint(0,2)]   
         self.grid = MultiGrid(width,height,True)
@@ -71,7 +74,7 @@ class graduateModel(Model):
                 "Needs help": lambda m: self.count_type_of_sat(m, 99, 80),
                 "Suicide": lambda m: self.count_type_of_sat(m, 100, 99),
                 "males": lambda m: self.count_males(m),
-                "femalse": lambda m: self.count_females(m),
+                "females": lambda m: self.count_females(m),
                 "international": lambda m: self.count_international(m),
                 "domestic": lambda m: self.count_domestic(m),
                 "AVG_Marks_Domestic": lambda m: self.average_domestic(m),

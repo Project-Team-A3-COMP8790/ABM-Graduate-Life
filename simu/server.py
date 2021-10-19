@@ -74,7 +74,7 @@ COLORS_AVG_MARKS = {
 def graduateModelPotrayal(agent):
     if agent is None:
         return
-    portrayal = {"Shape": "circle", "Filled": "true", "r": 3, "Layer": 2}
+    portrayal = {"Shape": "./student_icon.png", "Filled": "true", "scale": 5, "Layer": 2}
 
     (x, y) = agent.pos
     # print(agent.satisfaction)
