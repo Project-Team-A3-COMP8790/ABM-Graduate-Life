@@ -9,6 +9,22 @@ from .agent import Student_Model
 from mesa.visualization.ModularVisualization import VisualizationElement
 
 graduateModel_Initial = graduateModel
+class AttributeElementSimpleText(TextElement):
+    def __init__(self, attr_name):
+        '''
+        Create a new text attribute element.
+
+        Args:
+            attr_name: The name of the attribute to extract from the model.
+
+        Example return: "happy: 10"
+        '''
+        self.attr_name = attr_name
+
+    def render(self, model):
+        return str(self.attr_name)
+
+
 class AttributeElement(TextElement):
     def __init__(self, attr_name):
         '''
@@ -57,38 +73,41 @@ COLORS_GENDER = {
 }
 COLORS_VISA = {
     "international": "#5d4037",
-    "domestic": "#e0e0e0",
+    "domestic": "#009688",
 }
 COLORS_AVG_MARKS = {
-    "AVG_Marks_Domestic": "#e0e0e0",
+    "AVG_Marks_Domestic": "#009688",
     "AVG_Marks_internation": "#5d4037",
     "AVG_Marks_males": "#03a9f4",
     "AVG_Marks_females": "#ff80ab",
-    "AVG_Marks_Interact": "#ef9a9a",
-    "AVG_Marks_NoInteract": "#263238",
     "AVG marks_interaction":  "#ba68c8",
     "Avg marks no interaction": "#607d8b"
 }
 
-
+ShapeIcon = "student_icon_"
 def graduateModelPotrayal(agent):
     if agent is None:
         return
-    portrayal = {"Shape": "./student_icon.png", "Filled": "true", "scale": 5, "Layer": 2}
+    portrayal = {"Filled": "true", "scale": 5, "Layer": 2}
 
     (x, y) = agent.pos
     # print(agent.satisfaction)
 
     if agent.satisfaction <= 20:
         portrayal["Color"] = COLORS_SATISFICATION["Satisfied"]
+        portrayal["Shape"] = ShapeIcon + "Satisfied.png"
     elif agent.satisfaction > 20 and agent.satisfaction <= 40:
         portrayal["Color"] = COLORS_SATISFICATION["Mildly satisfied"]
+        portrayal["Shape"] = ShapeIcon + "Mildly satisfied.png"
     elif agent.satisfaction > 40 and agent.satisfaction <= 80:
         portrayal["Color"] = COLORS_SATISFICATION["Unsatisfied"]
+        portrayal["Shape"] = ShapeIcon + "Unsatisfied.png"
     elif agent.satisfaction > 80 and agent.satisfaction <= 99:
         portrayal["Color"] = COLORS_SATISFICATION["Needs help"]
+        portrayal["Shape"] = ShapeIcon + "Needs help.png"
     else:
         portrayal["Color"] = COLORS_SATISFICATION["Suicide"]
+        portrayal["Shape"] = ShapeIcon + "Suicide.png"
         
     return portrayal
 
@@ -125,8 +144,19 @@ barChart_Marks = BarChartModule(
 )
 TextElement_Event = AttributeElement("eventCount")
 
+studentCountVSStep = AttributeElementSimpleText("Student Count VS Step")
+InternationVSDomesticStudentCount = AttributeElementSimpleText("International VS Domestic Student Count")
+MaleVSFemaleStudentCount = AttributeElementSimpleText("Male VS Female Student Count")
+studentCountVSSatisfactionGroup = AttributeElementSimpleText("Student Count VS Satisfaction Group")
+studentCountVSAvgMarksGroup = AttributeElementSimpleText("Student Count VS Avg Marks Group")
+
 
 server = ModularServer(
-    graduateModel_Initial, [TextElement_Event, canvas_element, tree_chart, pieChart_Visa, pieChart_Gender, barChart_Satisfaction, barChart_Marks],"Graduate life", model_params
+    graduateModel_Initial, [
+        TextElement_Event, canvas_element, tree_chart, studentCountVSStep, 
+        barChart_Satisfaction, studentCountVSSatisfactionGroup, 
+        barChart_Marks, studentCountVSAvgMarksGroup,
+        pieChart_Visa, InternationVSDomesticStudentCount, pieChart_Gender, MaleVSFemaleStudentCount,
+    ],"Graduate life", model_params
 )
 
