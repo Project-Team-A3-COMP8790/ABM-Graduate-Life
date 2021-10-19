@@ -75,9 +75,9 @@ class Student_Model(Agent):
 
             
             if self.currentmarks >= 77.67:
-                self.satisfaction += 1
+                self.satisfaction -= 0.1
             else:
-                self.satisfaction -= 1
+                self.satisfaction += 0.75
         
         # self.satisfaction = 0.2*(self.currentmarks) + 0.4*(self.workload) + 0.3*(self.gender) + 0.5*(self.visa) + 0.2*(self.dept)
         # print("Workload changed to: ", self.workload)
