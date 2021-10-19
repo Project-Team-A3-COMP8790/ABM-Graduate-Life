@@ -57,15 +57,13 @@ COLORS_GENDER = {
 }
 COLORS_VISA = {
     "international": "#5d4037",
-    "domestic": "#e0e0e0",
+    "domestic": "#009688",
 }
 COLORS_AVG_MARKS = {
-    "AVG_Marks_Domestic": "#e0e0e0",
+    "AVG_Marks_Domestic": "#009688",
     "AVG_Marks_internation": "#5d4037",
     "AVG_Marks_males": "#03a9f4",
     "AVG_Marks_females": "#ff80ab",
-    "AVG_Marks_Interact": "#ef9a9a",
-    "AVG_Marks_NoInteract": "#263238",
     "AVG marks_interaction":  "#ba68c8",
     "Avg marks no interaction": "#607d8b"
 }
