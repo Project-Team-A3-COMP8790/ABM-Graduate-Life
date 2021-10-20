@@ -1,6 +1,6 @@
 # ABM-Graduate-Life
 
-Guide Line
+GuideLine
 
  
 
