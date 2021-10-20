@@ -42,15 +42,15 @@ Output ---
 
       Satisfaction for the visualization. A student is  
 
-      “Satisficed” state when the satisfaction unit is between 0 and 20 
+      “Satisficed” ---- state when the satisfaction unit is between 0 and 20 
 
-      “Mildly satisfied” state when the satisfaction unit is between 40 and 60 
+      “Mildly satisfied” ---- state when the satisfaction unit is between 40 and 60 
 
-      “Unsatisfied” state when the satisfaction unit is between 60 and 80 
+      “Unsatisfied” ---- state when the satisfaction unit is between 60 and 80 
 
-      “Needs help” state when the satisfaction unit is between 80 and 98 
+      “Needs help” ---- state when the satisfaction unit is between 80 and 98 
 
-      “Suicide” state when the satisfaction unit is between 98 and 100. Hence, no step of this student is considered. 
+      “Suicide” ---- state when the satisfaction unit is between 98 and 100. Hence, no step of this student is considered. 
 
 How to run the model ----- 
 
