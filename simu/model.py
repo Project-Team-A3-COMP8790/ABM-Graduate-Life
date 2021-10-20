@@ -1,4 +1,4 @@
-from win10toast import ToastNotifier
+# from win10toast import ToastNotifier
 from mesa import Model
 from mesa.time import RandomActivation
 from .agent import Student_Model as gradagents
@@ -8,7 +8,7 @@ import random
 import numpy as np
 from random import randint
 
-n = ToastNotifier()
+# n = ToastNotifier()
 
 class graduateModel(Model):
     workload  = [0.84, .70,0.60]
@@ -98,14 +98,14 @@ class graduateModel(Model):
             agent.workload = self.work_value
             
             if(self.stepCounter in self.eventFrequency):
-                if(randint(0,1)>0.7 and (self.eventBudget>0)):
+                if(randint(0,1)>0.5):
                     EventOccured = True
                     agent.satisfaction -= 5
                     self.eventBudget = self.eventBudget - 1
             
         if(EventOccured == True):
             self.eventCount+=1
-            n.show_toast("Event Occurred", "Event has Occurred", duration = 0.5)
+            # n.show_toast("Event Occurred", "Event has Occurred", duration = 0.5)
         self.stepCounter+=1
         self.schedule.step()
         self.work_value = self.workload[random.randint(0,2)]  

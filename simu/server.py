@@ -118,7 +118,7 @@ tree_chart = ChartModule(
 )
 
 model_params = {
-    "N": UserSettableParameter('slider',"Number of Agents",20,2,1000,1),
+    "N": UserSettableParameter('slider',"Number of Agents",20,2,3000,1),
     "height": 100,
     "width": 100,
     "initial_marks_signma" : UserSettableParameter('slider',"Initial Mark Distribution tails",20,0,30,1),
