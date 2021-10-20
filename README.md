@@ -1,6 +1,6 @@
 # ABM-Graduate-Life
 
-/root/My Computer/ABM Graudate Life/ABM-Graduate-Life/simu/model.py Assumptions – 
+Guide Line
 
  
 
