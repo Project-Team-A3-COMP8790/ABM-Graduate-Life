@@ -6,19 +6,19 @@
 
 Parameters ---  
 
-      Cost of each Event is 70 per person, so accordingly the students are invited, and satisfaction is increased by 20 units as the base and the interaction between students stays independent to this. 
+      Event ---  Cost of each Event is 70 per person, so accordingly the students are invited, and satisfaction is increased by 20 units as the base and the interaction between students stays independent to this. 
 
  
 
-      Event Frequency is taken as the upper limit, as the events may get cancelled, etc. so keeping this into account, the occurrence of event is taken at random steps from 1 to 150. 
+      Event Frequency ---- Event Frequency is taken as the upper limit, as the events may get cancelled, etc. so keeping this into account, the occurrence of event is taken at random steps from 1 to 150. 
 
  
 
-      Visa is considered a distribution, that is has a range from 0 to 100. 
+     Visa Status ---- Visa is considered a distribution, that is has a range from 0 to 100. 
 
   
 
-      Gender of the student is considered a normal distribution and according to the gender of the individual, there will be an inherent disadvantage that they will perform worse than male [1] 
+      Gender ----- Gender of the student is considered a normal distribution and according to the gender of the individual, there will be an inherent disadvantage that they will perform worse than male [1] 
 
       The Women and Trans genders will have a more negative affect on the satisfaction according to the workload [1]. 
 
@@ -26,7 +26,7 @@ Parameters ---
 
  
 
-      The marks/grades of the students will play a vital role when the students interact with one another during the term. So, keeping this in mind, the marks will be affected by the students who are close to the agent and hence, the satisfaction will also be dependent on this. 
+      Marks ------ The marks/grades of the students will play a vital role when the students interact with one another during the term. So, keeping this in mind, the marks will be affected by the students who are close to the agent and hence, the satisfaction will also be dependent on this. 
 
  
 
